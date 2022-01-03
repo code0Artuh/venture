@@ -1,0 +1,39 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Seats {
+  id         Int                 @id @default(autoincrement())
+  number      String
+  booked      Boolean
+  airplanes SeatsOnAirplane[]
+}
+
+model Airplane {
+  id    Int                 @id @default(autoincrement())
+  departureTime Int
+  arrivalTime Int
+  airport String
+  availableSeats Int
+  ticketPrice Int
+  seats SeatsOnAirplane[]
+}
+
+model SeatsOnAirplane {
+  seat       Seats     @relation(fields: [seatsId], references: [id])
+  seatsId     Int // relation scalar field (used in the `@relation` attribute above)
+  airplane   Airplane @relation(fields: [airplaneId], references: [id])
+  airplaneId Int // relation scalar field (used in the `@relation` attribute above)
+  assignedAt DateTime @default(now())
+  assignedBy String
+
+  @@id([seatsId, airplaneId])
+}
